@@ -16,6 +16,9 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
+    - jsonPath: .spec.service
+      name: SERVICE
+      type: string
     - jsonPath: .spec.window
       name: Window
       type: string
@@ -50,102 +53,107 @@ spec:
             type: string
           metadata:
             type: object
+          service:
+            description: Service is the application of the SLOs.
+            type: string
           spec:
             description: ServiceLevelObjectiveSpec defines the desired state of ServiceLevelObjective.
             properties:
               slos:
                 description: SLOs are the SLOs of the service.
                 items:
-                  description: |-
-                    Description describes the ServiceLevelObjective in more detail and
-                    gives extra context for engineers that might not directly work on the service.
-                  type: string
-                  indicator:
-                    description: |-
-                      ServiceLevelIndicator is the underlying data source that indicates how the service is doing.
-                      This will be a Prometheus metric with specific selectors for your service.
-                    properties:
-                      bool_gauge:
-                        description: |-
-                          BoolGauge is the indicator that measures whether a boolean gauge is
-                          successful.
-                        properties:
-                          grouping:
-                            description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
-                            items:
+                  properties:
+                    indicator:
+                      description: |-
+                        ServiceLevelIndicator is the underlying data source that indicates how the service is doing.
+                        This will be a Prometheus metric with specific selectors for your service.
+                      properties:
+                        bool_gauge:
+                          description: |-
+                            BoolGauge is the indicator that measures whether a boolean gauge is
+                            successful.
+                          properties:
+                            grouping:
+                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
+                              items:
+                                type: string
+                              type: array
+                            metric:
                               type: string
-                            type: array
-                          metric:
-                            type: string
-                        required:
-                        - metric
-                        type: object
-                      latency:
-                        description: Latency is the indicator that measures a certain percentage to be faster than the expected latency.
-                        properties:
-                          grouping:
-                            description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
-                            items:
-                              type: string
-                            type: array
-                          success:
-                            description: Success is the metric that returns how many errors there are.
-                            properties:
-                              metric:
+                          required:
+                          - metric
+                          type: object
+                        latency:
+                          description: Latency is the indicator that measures a certain percentage to be faster than the expected latency.
+                          properties:
+                            grouping:
+                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
+                              items:
                                 type: string
-                            required:
-                            - metric
-                            type: object
-                          total:
-                            description: Total is the metric that returns how many requests there are in total.
-                            properties:
-                              metric:
+                              type: array
+                            success:
+                              description: Success is the metric that returns how many errors there are.
+                              properties:
+                                metric:
+                                  type: string
+                              required:
+                              - metric
+                              type: object
+                            total:
+                              description: Total is the metric that returns how many requests there are in total.
+                              properties:
+                                metric:
+                                  type: string
+                              required:
+                              - metric
+                              type: object
+                          required:
+                          - success
+                          - total
+                          type: object
+                        ratio:
+                          description: Ratio is the indicator that measures against errors / total events.
+                          properties:
+                            errors:
+                              description: Errors is the metric that returns how many errors there are.
+                              properties:
+                                metric:
+                                  type: string
+                              required:
+                              - metric
+                              type: object
+                            grouping:
+                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
+                              items:
                                 type: string
-                            required:
-                            - metric
-                            type: object
-                        required:
-                        - success
-                        - total
-                        type: object
-                      ratio:
-                        description: Ratio is the indicator that measures against errors / total events.
-                        properties:
-                          errors:
-                            description: Errors is the metric that returns how many errors there are.
-                            properties:
-                              metric:
-                                type: string
-                            required:
-                            - metric
-                            type: object
-                          grouping:
-                            description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
-                            items:
-                              type: string
-                            type: array
-                          total:
-                            description: Total is the metric that returns how many requests there are in total.
-                            properties:
-                              metric:
-                                type: string
-                            required:
-                            - metric
-                            type: object
-                        required:
-                        - errors
-                        - total
-                        type: object
-                    type: object
-                  target:
-                    description: |-
-                      Target is a string that's casted to a float64 between 0 - 100.
-                      It represents the desired availability of the service in the given window.
-                      float64 are not supported: https://github.com/kubernetes-sigs/controller-tools/issues/245
-                    type: string
-                  window:
-                    description: Window within which the Target is supposed to be kept. Usually something like 1d, 7d or 28d.
-                    type: string
+                              type: array
+                            total:
+                              description: Total is the metric that returns how many requests there are in total.
+                              properties:
+                                metric:
+                                  type: string
+                              required:
+                              - metric
+                              type: object
+                          required:
+                          - errors
+                          - total
+                          type: object
+                      type: object
+                    target:
+                      description: |-
+                        Target is a string that's casted to a float64 between 0 - 100.
+                        It represents the desired availability of the service in the given window.
+                        float64 are not supported: https://github.com/kubernetes-sigs/controller-tools/issues/245
+                      type: string
+                    window:
+                      description: Window within which the Target is supposed to be kept. Usually something like 1d, 7d or 28d.
+                      type: string
+                    description:
+                      description: |-
+                        Description describes the ServiceLevelObjective in more detail and
+                        gives extra context for engineers that might not directly work on the service.
+                      type: string
                   required:
                   - indicator
                   - target
