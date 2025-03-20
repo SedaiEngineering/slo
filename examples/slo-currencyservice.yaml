@@ -1,0 +1,21 @@
+---
+apiVersion: sedai.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  labels:
+    owner: currencyTeam
+  name: currencyservice-slo
+  namespace: google-examples
+service: currencyservice
+spec:
+  slos:
+    - target: "99"
+      window: 2w
+      description: Latency Indicator
+      indicator:
+        latency:
+          success:
+            metric: istio.mesh.request.duration.milliseconds.sum
+          total:
+            metric: istio.mesh.request.duration.milliseconds.count
+      
