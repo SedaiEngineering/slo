@@ -13,9 +13,9 @@ spec:
       window: 2w
       description: Latency Indicator
       indicator:
-        latency:
-          success:
+        ratio:
+          numeratorMetrics:
             metric: istio.mesh.request.duration.milliseconds.sum
-          total:
+          denominatorMetrics:
             metric: istio.mesh.request.duration.milliseconds.count
       
