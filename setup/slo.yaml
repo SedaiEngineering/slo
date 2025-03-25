@@ -63,6 +63,8 @@ spec:
                 description: SLOs are the SLOs of the service.
                 items:
                   properties:
+                    name:
+                      type: string
                     indicator:
                       description: |-
                         ServiceLevelIndicator is the underlying data source that indicates how the service is doing.
@@ -70,7 +72,7 @@ spec:
                       properties:
                         raw:
                           description: |-
-                            Raw is the raw SLI type. it describes a single query that will get the raw error ratio (0-1) for the SLO.
+                            Raw is the raw SLI type. it describes a single query that will get the success criteria for the SLO.
                           properties:
                             grouping:
                               description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
@@ -80,7 +82,10 @@ spec:
                             properties:
                               metrics:
                                 filters:
-                                  description: Filters takes a key, value pair and allows you to filter based on supported labels.
+                                  description: |-
+                                    Filters takes a key, value pair and allows you to filter based on supported labels. 
+                                    The latency threshold can be specified as >= latency threshold supported key `latencyThreshold` 
+                                    and `latencyOperator` with values le, ge, lt, gt
                                   items:
                                     type: object
                                     properties:
@@ -93,15 +98,32 @@ spec:
                                   type: array
                                 metric:
                                   type: string
+                                sliAggregationInterval:
+                                  description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
+                                  type: string
+                                sliAggregationStats:
+                                  description: This is the aggregation for slicing the timeseries into equal-duration intervals
+                                  type: string
                                 required:
                                 - metric
+                                - sliAggregationInterval
+                                - sliAggregationStats
                               queryLanguage:
-                                description: Define a promql query. Supported only for prom like providers
+                                description: Define a promql query. Supported only for prom like providers.
                                 type: promql
                                 query:
+                                  description: Specify the uptime success query. For latency queries, the latency threshold can be specified as >= latency threshold or any promql supported comparator
+                                  type: string
+                                sliAggregationInterval:
+                                  description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
+                                  type: string
+                                sliAggregationStats:
+                                  description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
                                 required:
                                 - query
+                                - sliAggregationInterval
+                                - sliAggregationStats
                               oneOf:
                               - required: ["metrics"]
                               - required: ["queryLanguage"]
@@ -147,9 +169,17 @@ spec:
                                       operator:
                                         type: string                               
                                   type: array
+                                sliAggregationInterval:
+                                  description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
+                                  type: string
+                                sliAggregationStats:
+                                  description: This is the aggregation for slicing the timeseries into equal-duration intervals
+                                  type: string
                                 required:
                                 - numeratorMetrics
                                 - denominatorMetrics
+                                - sliAggregationInterval
+                                - sliAggregationStats
                               queryLanguage:
                                 description: Define a promql query. Supported only for prom like providers
                                 type: promql
@@ -157,9 +187,17 @@ spec:
                                   type: string
                                 denominatorQuery:
                                   type: string
+                                sliAggregationInterval:
+                                  description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
+                                  type: string
+                                sliAggregationStats:
+                                  description: This is the aggregation for slicing the timeseries into equal-duration intervals
+                                  type: string
                                 required:
                                 - numeratorQuery
                                 - denominatorQuery
+                                - sliAggregationInterval
+                                - sliAggregationStats
                               oneOf:
                               - required: ["metrics"]
                               - required: ["queryLanguage"]
@@ -253,6 +291,7 @@ spec:
                   - indicator
                   - target
                   - window
+                  - name
                   type: object 
                 minItems: 1
                 type: array
