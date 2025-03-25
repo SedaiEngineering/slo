@@ -68,136 +68,170 @@ spec:
                         ServiceLevelIndicator is the underlying data source that indicates how the service is doing.
                         This will be a monitoring provider metric with specific selectors for your service.
                       properties:
-                        bool_gauge:
-                          description: |-
-                            BoolGauge is the indicator that measures whether a boolean gauge is
-                            successful.
-                          properties:
-                            grouping:
-                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
-                              items:
-                                type: string
-                              type: array
-                            filters:
-                              description: Filters takes a key, value pair and allows you to filter based on supported labels.
-                              items:
-                                type: object
-                                properties:
-                                  key:
-                                    type: string
-                                  value:
-                                    type: string
-                              type: array
-                            metric:
-                              type: string
-                          required:
-                          - metric
-                          type: object
-                        ratio:
-                          description: Ratio is the indicator that measures against errors / total events.
-                          properties:
-                            numeratorMetrics:
-                              description: numeratorMetrics is the metric that returns success/errors there are.
-                              properties:
-                                metric:
-                                  type: string
-                              required:
-                              - metric
-                              type: object
-                            grouping:
-                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
-                              items:
-                                type: string
-                              type: array
-                            filters:
-                              description: |-
-                                Filters takes a key, value pair and allows you to filter based on supported labels.
-                                For latency, please specify a filter "le" to specify the threshold latency 
-                              items:
-                                type: object
-                                properties:
-                                  key:
-                                    type: string
-                                  value:
-                                    type: string                                
-                              type: array
-                            denominatorMetrics:
-                              description: denominatorMetrics is the metric that returns how many requests there are in total.
-                              properties:
-                                metric:
-                                  type: string
-                              required:
-                              - metric
-                              type: object
-                          required:
-                          - numeratorMetrics
-                          - denominatorMetrics
-                          type: object
                         raw:
                           description: |-
-                            RAW is the indicator that measures an exact value.
+                            Raw is the raw SLI type. it describes a single query that will get the raw error ratio (0-1) for the SLO.
                           properties:
                             grouping:
                               description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
                               items:
                                 type: string
                               type: array
-                            filters:
-                              description: Filters takes a key, value pair and allows you to filter based on supported labels.
+                            properties:
+                              metrics:
+                                filters:
+                                  description: Filters takes a key, value pair and allows you to filter based on supported labels.
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                      value:
+                                        type: string
+                                      operator:
+                                        type: string
+                                  type: array
+                                metric:
+                                  type: string
+                                required:
+                                - metric
+                              queryLanguage:
+                                description: Define a promql query. Supported only for prom like providers
+                                type: promql
+                                query:
+                                  type: string
+                                required:
+                                - query
+                              oneOf:
+                              - required: ["metrics"]
+                              - required: ["queryLanguage"]
+                              type: object
+                          type: object
+                        requestRatio:
+                          description: Ratio is the indicator that measures against success / total events.
+                          properties:
+                            grouping:
+                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
                               items:
-                                type: object
-                                properties:
-                                  key:
-                                    type: string
-                                  value:
-                                    type: string
+                                type: string
                               type: array
-                            metric:
-                              type: string
-                          required:
-                          - metric
+                            properties:
+                              metric:
+                                numeratorMetrics:
+                                  description: numeratorMetrics is the metric that returns success there are.
+                                  properties:
+                                    metric:
+                                      type: string
+                                  required:
+                                  - metric
+                                  type: object
+                                denominatorMetrics:
+                                  description: denominatorMetrics is the metric that returns how many requests there are in total.
+                                  properties:
+                                    metric:
+                                      type: string
+                                  required:
+                                  - metric
+                                  type: object
+                                filters:
+                                  description: |-
+                                    Filters takes a key, value pair and allows you to filter based on supported labels.
+                                    For latency, please specify a filter "le" to specify the threshold latency 
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                      value:
+                                        type: string 
+                                      operator:
+                                        type: string                               
+                                  type: array
+                                required:
+                                - numeratorMetrics
+                                - denominatorMetrics
+                              queryLanguage:
+                                description: Define a promql query. Supported only for prom like providers
+                                type: promql
+                                numeratorQuery:
+                                  type: string
+                                denominatorQuery:
+                                  type: string
+                                required:
+                                - numeratorQuery
+                                - denominatorQuery
+                              oneOf:
+                              - required: ["metrics"]
+                              - required: ["queryLanguage"]
+                              type: object
                           type: object
                         windowedRatio:
                           description:  |-
                             Ratio is the indicator that measures against successful / total events over fixed time windows. 
                             Services with periodic bulk operations or batch processes are sbest suited for this
                           properties:
-                            numeratorMetrics:
-                              description: numeratorMetrics is the metric that returns Percentage of successful windows .
-                              properties:
-                                metric:
-                                  type: string
-                              required:
-                              - metric
-                              type: object
                             grouping:
                               description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
                               items:
                                 type: string
                               type: array
-                            filters:
-                              description: |-
-                                Filters takes a key, value pair and allows you to filter based on supported labels.
-                                For latency, please specify a filter "le" to specify the threshold latency 
-                              items:
-                                type: object
-                                properties:
-                                  key:
-                                    type: string
-                                  value:
-                                    type: string                                
-                              type: array
-                            denominatorMetrics:
-                              description: denominatorMetrics is the metric that returns how many requests there are in total.
-                              properties:
-                                metric:
+                            properties:
+                              metric:
+                                perWindowInterval:
+                                  description: Smaller Fixed time window over which Metrics are evaluated.
                                   type: string
-                              required:
-                              - metric
+                                perWindowAggregation:
+                                  description: Smaller Fixed time window over which Metrics are evaluated.
+                                  type: string
+                                numeratorMetrics:
+                                  description: numeratorMetrics is the metric that returns Percentage of successful windows .
+                                  properties:
+                                    metric:
+                                      type: string
+                                  required:
+                                  - metric
+                                  type: object
+                                denominatorMetrics:
+                                  description: denominatorMetrics is the metric that returns total windows.
+                                  properties:
+                                    metric:
+                                      type: string
+                                    required:
+                                    - metric
+                                  type: object
+                                filters:
+                                  description: |-
+                                    Filters takes a key, value pair and allows you to filter based on supported labels.
+                                    For latency, please specify a filter "le" to specify the threshold latency 
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                      value:
+                                        type: string  
+                                      operator:
+                                        type: string                              
+                                  type: array
+                                required:
+                                - numeratorMetrics
+                                - denominatorMetrics
+                                - perWindowAggregation
+                                - perWindowInterval
+                              queryLanguage:
+                                description: Define a promql query. Supported only for prom like providers
+                                type: promql
+                                numeratorQuery:
+                                  type: string
+                                denominatorQuery:
+                                  type: string
+                                required:
+                                - numeratorQuery
+                                - denominatorQuery
+                              oneOf:
+                              - required: ["metrics"]
+                              - required: ["queryLanguage"]
                               type: object
-                          required:
-                          - numeratorMetrics
-                          - denominatorMetrics
                           type: object
                       type: object
                     target:

@@ -14,8 +14,9 @@ spec:
       description: Latency Indicator
       indicator:
         ratio:
-          numeratorMetrics:
-            metric: istio.mesh.request.duration.milliseconds.sum
-          denominatorMetrics:
-            metric: istio.mesh.request.duration.milliseconds.count
+          metrics: 
+            numeratorMetrics:
+              metric: istio.mesh.request.duration.milliseconds.sum
+            denominatorMetrics:
+              metric: istio.mesh.request.duration.milliseconds.count
       
