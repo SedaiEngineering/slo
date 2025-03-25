@@ -75,12 +75,14 @@ spec:
                             Raw is the raw SLI type. it describes a single query that will get the success criteria for the SLO.
                           properties:
                             grouping:
-                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
+                              description: allow you to track uptime for individual groups, The groups can defined in the “group by” portion of the metric query.
                               items:
                                 type: string
                               type: array
-                            properties:
-                              metrics:
+                            metrics:
+                              description: |-
+                                Typed metrics
+                              properties:
                                 filters:
                                   description: |-
                                     Filters takes a key, value pair and allows you to filter based on supported labels. 
@@ -104,13 +106,16 @@ spec:
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
-                                required:
-                                - metric
-                                - sliAggregationInterval
-                                - sliAggregationStats
-                              queryLanguage:
-                                description: Define a promql query. Supported only for prom like providers.
-                                type: promql
+                              required:
+                              - metric
+                              - sliAggregationInterval
+                              - sliAggregationStats
+                              type: object
+                            queryLanguage:
+                              description: Define a promql query. Supported only for prom like providers.
+                              properties:
+                                qlType:
+                                  type: string
                                 query:
                                   description: Specify the uptime success query. For latency queries, the latency threshold can be specified as >= latency threshold or any promql supported comparator
                                   type: string
@@ -120,30 +125,45 @@ spec:
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
-                                required:
-                                - query
-                                - sliAggregationInterval
-                                - sliAggregationStats
-                              oneOf:
-                              - required: ["metrics"]
-                              - required: ["queryLanguage"]
+                              required:
+                              - query
+                              - sliAggregationInterval
+                              - sliAggregationStats
                               type: object
+                          oneOf:
+                          - required: ["metrics"]
+                          - required: ["queryLanguage"]
                           type: object
                         requestRatio:
                           description: Ratio is the indicator that measures against success / total events.
                           properties:
                             grouping:
-                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
+                              description: allow you to track uptime for individual groups, The groups can defined in the “group by” portion of the metric query.
                               items:
                                 type: string
                               type: array
-                            properties:
-                              metric:
+                            metrics:
+                              properties:
                                 numeratorMetrics:
                                   description: numeratorMetrics is the metric that returns success there are.
                                   properties:
                                     metric:
                                       type: string
+                                    filters:
+                                      description: |-
+                                        Filters takes a key, value pair and allows you to filter based on supported labels.
+                                        The latency threshold can be specified as filter supported key `latencyThreshold` 
+                                        and `latencyOperator` with values le, ge, lt, gt
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          value:
+                                            type: string 
+                                          operator:
+                                            type: string                               
+                                      type: array                                      
                                   required:
                                   - metric
                                   type: object
@@ -152,37 +172,40 @@ spec:
                                   properties:
                                     metric:
                                       type: string
+                                    filters:
+                                      description: |-
+                                        Filters takes a key, value pair and allows you to filter based on supported labels.
+                                        The latency threshold can be specified as filter supported key `latencyThreshold` 
+                                        and `latencyOperator` with values le, ge, lt, gt
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          value:
+                                            type: string 
+                                          operator:
+                                            type: string                               
+                                      type: array
                                   required:
                                   - metric
                                   type: object
-                                filters:
-                                  description: |-
-                                    Filters takes a key, value pair and allows you to filter based on supported labels.
-                                    For latency, please specify a filter "le" to specify the threshold latency 
-                                  items:
-                                    type: object
-                                    properties:
-                                      key:
-                                        type: string
-                                      value:
-                                        type: string 
-                                      operator:
-                                        type: string                               
-                                  type: array
                                 sliAggregationInterval:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
-                                required:
-                                - numeratorMetrics
-                                - denominatorMetrics
-                                - sliAggregationInterval
-                                - sliAggregationStats
-                              queryLanguage:
-                                description: Define a promql query. Supported only for prom like providers
-                                type: promql
+                              required:
+                              - numeratorMetrics
+                              - denominatorMetrics
+                              - sliAggregationInterval
+                              - sliAggregationStats
+                              type: object
+                            queryLanguage:
+                              properties:
+                                qlType:
+                                  type: string
                                 numeratorQuery:
                                   type: string
                                 denominatorQuery:
@@ -193,15 +216,15 @@ spec:
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
-                                required:
-                                - numeratorQuery
-                                - denominatorQuery
-                                - sliAggregationInterval
-                                - sliAggregationStats
-                              oneOf:
-                              - required: ["metrics"]
-                              - required: ["queryLanguage"]
+                              required:
+                              - numeratorQuery
+                              - denominatorQuery
+                              - sliAggregationInterval
+                              - sliAggregationStats
                               type: object
+                          oneOf:
+                          - required: ["metrics"]
+                          - required: ["queryLanguage"]
                           type: object
                         windowedRatio:
                           description:  |-
@@ -209,12 +232,12 @@ spec:
                             Services with periodic bulk operations or batch processes are sbest suited for this
                           properties:
                             grouping:
-                              description: Grouping allows an SLO to be defined for many SLI at once, like HTTP handlers for example.
+                              description: allow you to track uptime for individual groups, The groups can defined in the “group by” portion of the metric query.
                               items:
                                 type: string
                               type: array
-                            properties:
-                              metric:
+                            metric:
+                              properties:
                                 perWindowInterval:
                                   description: Smaller Fixed time window over which Metrics are evaluated.
                                   type: string
@@ -226,6 +249,20 @@ spec:
                                   properties:
                                     metric:
                                       type: string
+                                    filters:
+                                      description: |-
+                                        Filters takes a key, value pair and allows you to filter based on supported labels.
+                                        For latency, please specify a filter "le" to specify the threshold latency 
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          value:
+                                            type: string  
+                                          operator:
+                                            type: string                              
+                                      type: array
                                   required:
                                   - metric
                                   type: object
@@ -234,42 +271,44 @@ spec:
                                   properties:
                                     metric:
                                       type: string
-                                    required:
-                                    - metric
+                                    filters:
+                                      description: |-
+                                        Filters takes a key, value pair and allows you to filter based on supported labels.
+                                        For latency, please specify a filter "le" to specify the threshold latency 
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          value:
+                                            type: string  
+                                          operator:
+                                            type: string                              
+                                      type: array
+                                  required:
+                                  - metric
                                   type: object
-                                filters:
-                                  description: |-
-                                    Filters takes a key, value pair and allows you to filter based on supported labels.
-                                    For latency, please specify a filter "le" to specify the threshold latency 
-                                  items:
-                                    type: object
-                                    properties:
-                                      key:
-                                        type: string
-                                      value:
-                                        type: string  
-                                      operator:
-                                        type: string                              
-                                  type: array
-                                required:
-                                - numeratorMetrics
-                                - denominatorMetrics
-                                - perWindowAggregation
-                                - perWindowInterval
-                              queryLanguage:
-                                description: Define a promql query. Supported only for prom like providers
-                                type: promql
+                              required:
+                              - numeratorMetrics
+                              - denominatorMetrics
+                              - perWindowAggregation
+                              - perWindowInterval
+                              type: object
+                            queryLanguage:
+                              properties:
+                                qlType:
+                                  type: string
                                 numeratorQuery:
                                   type: string
                                 denominatorQuery:
                                   type: string
-                                required:
-                                - numeratorQuery
-                                - denominatorQuery
-                              oneOf:
-                              - required: ["metrics"]
-                              - required: ["queryLanguage"]
+                              required:
+                              - numeratorQuery
+                              - denominatorQuery
                               type: object
+                          oneOf:
+                          - required: ["metrics"]
+                          - required: ["queryLanguage"]
                           type: object
                       type: object
                     target:
