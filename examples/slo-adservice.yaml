@@ -6,8 +6,9 @@ metadata:
     owner: adServiceTeam
   name: adservice-slo
   namespace: google-examples
-service: adservice
 spec:
+  namespace: google-examples
+  service: adservice
   slos:
     - target: "99"
       window: 2w
