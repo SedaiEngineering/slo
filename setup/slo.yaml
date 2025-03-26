@@ -53,12 +53,15 @@ spec:
             type: string
           metadata:
             type: object
-          service:
-            description: Service is the application of the SLOs.
-            type: string
           spec:
             description: ServiceLevelObjectiveSpec defines the desired state of ServiceLevelObjective.
             properties:
+              service:
+                description: Service of the application of the SLOs.
+                type: string
+              namespace:
+                description: namespace of the application of the SLOs.
+                type: string
               slos:
                 description: SLOs are the SLOs of the service.
                 items:

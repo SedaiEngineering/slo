@@ -6,8 +6,9 @@ metadata:
     owner: currencyTeam
   name: currencyservice-slo
   namespace: google-examples
-service: currencyservice
 spec:
+  namespace: google-examples
+  service: currencyservice
   slos:
     - target: "99"
       window: 2w
