@@ -11,13 +11,14 @@ spec:
   slos:
     - target: "99"
       window: 2w
-      name: "Latecy SLO for Currency Service with raw indicator for averaged available latency 5min"
+      name: "Latecy"
       description: "99 % of the requests should have latency less than 5ms"
       indicator:
         raw:
-          metrics: 
-            metric: istio.mesh.request.duration.milliseconds
-            sliAggregationInterval: "300"
+          rawMetric: 
+            metricName: istio.mesh.request.duration.milliseconds
+            category: LATENCY
+            sliAggregationIntervalMS: "300"
             sliAggregationStats: avg
             filters:
               - key: latencyThreshold
@@ -28,20 +29,21 @@ spec:
                 operator: "="
     - target: "99"
       window: 2w
-      name: "Availability SLO for Currency Service with ratio indicator for averaged 5min"
+      name: "Availability"
       description: "99% of the requests should be successful"
       indicator:
         requestRatio:
-          metrics: 
+          requestMetric: 
+            category: AVAILABILITY
             numeratorMetrics: 
-              metric: istio.mesh.request.duration.milliseconds.count
+              metricName: istio.mesh.request.duration.milliseconds.count
               filters: 
                 - key: code
                   value: "5.*"
                   operator: "!~"
             denominatorMetrics: 
-              metric: istio.mesh.request.duration.milliseconds.count
-            sliAggregationInterval: "300"
+              metricName: istio.mesh.request.duration.milliseconds.count
+            sliAggregationIntervalMS: "300"
             sliAggregationStats: avg
               
 

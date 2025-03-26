@@ -74,15 +74,14 @@ spec:
                           description: |-
                             Raw is the raw SLI type. it describes a single query that will get the success criteria for the SLO.
                           properties:
-                            grouping:
-                              description: allow you to track uptime for individual groups, The groups can defined in the “group by” portion of the metric query.
-                              items:
-                                type: string
-                              type: array
-                            metrics:
+                            rawMetric:
                               description: |-
                                 Typed metrics
                               properties:
+                                category: 
+                                  description: |-
+                                    category can be any of these LATENCY, AVAILABILITY, ERRORS
+                                  type: string
                                 filters:
                                   description: |-
                                     Filters takes a key, value pair and allows you to filter based on supported labels. 
@@ -98,28 +97,33 @@ spec:
                                       operator:
                                         type: string
                                   type: array
-                                metric:
+                                metricName:
                                   type: string
-                                sliAggregationInterval:
+                                sliAggregationIntervalMS:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
                               required:
-                              - metric
-                              - sliAggregationInterval
+                              - metricName
+                              - sliAggregationIntervalMS
                               - sliAggregationStats
+                              - category
                               type: object
-                            queryLanguage:
+                            rawQueryLanguage:
                               description: Define a promql query. Supported only for prom like providers.
                               properties:
+                                category: 
+                                  description: |-
+                                    category can be any of these LATENCY, AVAILABILITY, ERRORS
+                                  type: string
                                 qlType:
                                   type: string
                                 query:
                                   description: Specify the uptime success query. For latency queries, the latency threshold can be specified as >= latency threshold or any promql supported comparator
                                   type: string
-                                sliAggregationInterval:
+                                sliAggregationIntervalMS:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
                                   type: string
                                 sliAggregationStats:
@@ -127,27 +131,27 @@ spec:
                                   type: string
                               required:
                               - query
-                              - sliAggregationInterval
+                              - sliAggregationIntervalMS
                               - sliAggregationStats
+                              - category
                               type: object
                           oneOf:
-                          - required: ["metrics"]
-                          - required: ["queryLanguage"]
+                          - required: ["rawMetric"]
+                          - required: ["rawQueryLanguage"]
                           type: object
                         requestRatio:
                           description: Ratio is the indicator that measures against success / total events.
                           properties:
-                            grouping:
-                              description: allow you to track uptime for individual groups, The groups can defined in the “group by” portion of the metric query.
-                              items:
-                                type: string
-                              type: array
-                            metrics:
+                            requestMetric:
                               properties:
+                                category: 
+                                  description: |-
+                                    category can be any of these LATENCY, AVAILABILITY, ERRORS
+                                  type: string
                                 numeratorMetrics:
                                   description: numeratorMetrics is the metric that returns success there are.
                                   properties:
-                                    metric:
+                                    metricName:
                                       type: string
                                     filters:
                                       description: |-
@@ -165,12 +169,12 @@ spec:
                                             type: string                               
                                       type: array                                      
                                   required:
-                                  - metric
+                                  - metricName
                                   type: object
                                 denominatorMetrics:
                                   description: denominatorMetrics is the metric that returns how many requests there are in total.
                                   properties:
-                                    metric:
+                                    metricName:
                                       type: string
                                     filters:
                                       description: |-
@@ -188,10 +192,10 @@ spec:
                                             type: string                               
                                       type: array
                                   required:
-                                  - metric
+                                  - metricName
                                   type: object
-                                sliAggregationInterval:
-                                  description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
+                                sliAggregationIntervalMS:
+                                  description: This is the interval for slicing the timeseries into equal-duration intervals in milliseconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
@@ -199,19 +203,24 @@ spec:
                               required:
                               - numeratorMetrics
                               - denominatorMetrics
-                              - sliAggregationInterval
+                              - sliAggregationIntervalMS
                               - sliAggregationStats
+                              - category
                               type: object
-                            queryLanguage:
+                            requestQueryLanguage:
                               properties:
+                                category: 
+                                  description: |-
+                                    category can be any of these LATENCY, AVAILABILITY, ERRORS
+                                  type: string
                                 qlType:
                                   type: string
                                 numeratorQuery:
                                   type: string
                                 denominatorQuery:
                                   type: string
-                                sliAggregationInterval:
-                                  description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
+                                sliAggregationIntervalMS:
+                                  description: This is the interval for slicing the timeseries into equal-duration intervals in milliseconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
@@ -219,25 +228,25 @@ spec:
                               required:
                               - numeratorQuery
                               - denominatorQuery
-                              - sliAggregationInterval
+                              - sliAggregationIntervalMS
                               - sliAggregationStats
+                              - category
                               type: object
                           oneOf:
-                          - required: ["metrics"]
-                          - required: ["queryLanguage"]
+                          - required: ["requestMetric"]
+                          - required: ["requestQueryLanguage"]
                           type: object
                         windowedRatio:
                           description:  |-
                             Ratio is the indicator that measures against successful / total events over fixed time windows. 
                             Services with periodic bulk operations or batch processes are sbest suited for this
                           properties:
-                            grouping:
-                              description: allow you to track uptime for individual groups, The groups can defined in the “group by” portion of the metric query.
-                              items:
-                                type: string
-                              type: array
-                            metric:
+                            windowMetric:
                               properties:
+                                category: 
+                                  description: |-
+                                    category can be any of these LATENCY, AVAILABILITY, ERRORS
+                                  type: string
                                 perWindowInterval:
                                   description: Smaller Fixed time window over which Metrics are evaluated.
                                   type: string
@@ -247,7 +256,7 @@ spec:
                                 numeratorMetrics:
                                   description: numeratorMetrics is the metric that returns Percentage of successful windows .
                                   properties:
-                                    metric:
+                                    metricName:
                                       type: string
                                     filters:
                                       description: |-
@@ -264,12 +273,12 @@ spec:
                                             type: string                              
                                       type: array
                                   required:
-                                  - metric
+                                  - metricName
                                   type: object
                                 denominatorMetrics:
                                   description: denominatorMetrics is the metric that returns total windows.
                                   properties:
-                                    metric:
+                                    metricName:
                                       type: string
                                     filters:
                                       description: |-
@@ -286,16 +295,21 @@ spec:
                                             type: string                              
                                       type: array
                                   required:
-                                  - metric
+                                  - metricName
                                   type: object
                               required:
                               - numeratorMetrics
                               - denominatorMetrics
                               - perWindowAggregation
                               - perWindowInterval
+                              - category
                               type: object
-                            queryLanguage:
+                            windowQueryLanguage:
                               properties:
+                                category: 
+                                  description: |-
+                                    category can be any of these LATENCY, AVAILABILITY, ERRORS
+                                  type: string
                                 qlType:
                                   type: string
                                 numeratorQuery:
@@ -305,10 +319,11 @@ spec:
                               required:
                               - numeratorQuery
                               - denominatorQuery
+                              - category
                               type: object
                           oneOf:
-                          - required: ["metrics"]
-                          - required: ["queryLanguage"]
+                          - required: ["windowMetric"]
+                          - required: ["windowQueryLanguage"]
                           type: object
                       type: object
                     target:
