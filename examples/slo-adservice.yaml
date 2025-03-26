@@ -1,0 +1,53 @@
+---
+apiVersion: sedai.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  labels:
+    owner: adServiceTeam
+  name: adservice-slo
+  namespace: google-examples
+service: adservice
+spec:
+  slos:
+    - target: "99"
+      window: 2w
+      name: "Latency"
+      description: "99 % of the requests should have latency less than 100ms"
+      indicator:
+        raw:
+          rawQueryLanguage:
+            qlType: promql 
+            query: istio_request_duration_milliseconds_sum{destination_service_name="adservice", destination_service_namespace="google-examples"}/istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"} <= 100
+            category: LATENCY
+            sliAggregationIntervalMS: "300"
+            sliAggregationStats: avg
+    - target: "99"
+      window: 2w
+      name: "Availability"
+      description: "99% of the requests should be successful"
+      indicator:
+        requestRatio:
+          requestQueryLanguage: 
+            qlType: promql 
+            category: AVAILABILITY
+            numeratorQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples",response_code!~"5.*"}
+            denominatorQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
+            sliAggregationIntervalMS: "300"
+            sliAggregationStats: avg
+    - target: "99"
+      window: 2w
+      name: "LatencyRatio"
+      description: "99% of the requests should be successful"
+      indicator:
+        requestRatio:
+          requestQueryLanguage: 
+            qlType: promql 
+            category: LATENCY
+            numeratorQuery: istio_request_duration_milliseconds_bucket{destination_service_name="adservice", destination_service_namespace="google-examples",le="0.1"}
+            denominatorQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
+            sliAggregationIntervalMS: "300"
+            sliAggregationStats: avg
+
+              
+
+      
