@@ -5,7 +5,7 @@ metadata:
   labels:
     owner: adServiceTeam
   name: adservice-slo
-  namespace: google-examples
+
 spec:
   namespace: google-examples
   service: adservice
@@ -18,9 +18,9 @@ spec:
         raw:
           rawQueryLanguage:
             qlType: promql 
-            query: istio_request_duration_milliseconds_sum{destination_service_name="adservice", destination_service_namespace="google-examples"}/istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"} <= 100
+            errorQuery: istio_request_duration_milliseconds_sum{destination_service_name="adservice", destination_service_namespace="google-examples"}/istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"} > 100
             category: LATENCY
-            sliAggregationIntervalMS: "300"
+            sliAggregationIntervalms: "300"
             sliAggregationStats: avg
     - target: "99"
       window: 2w
@@ -31,9 +31,9 @@ spec:
           requestQueryLanguage: 
             qlType: promql 
             category: AVAILABILITY
-            numeratorQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples",response_code!~"5.*"}
-            denominatorQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
-            sliAggregationIntervalMS: "300"
+            numeratorErrorQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples",response_code=~"5.*"}
+            denominatorTotalQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
+            sliAggregationIntervalms: "300"
             sliAggregationStats: avg
     - target: "99"
       window: 2w
@@ -44,9 +44,9 @@ spec:
           requestQueryLanguage: 
             qlType: promql 
             category: LATENCY
-            numeratorQuery: istio_request_duration_milliseconds_bucket{destination_service_name="adservice", destination_service_namespace="google-examples",le="0.1"}
-            denominatorQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
-            sliAggregationIntervalMS: "300"
+            numeratorErrorQuery: istio_request_duration_milliseconds_bucket{destination_service_name="adservice", destination_service_namespace="google-examples",gt="0.1"}
+            denominatorTotalQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
+            sliAggregationIntervalms: "300"
             sliAggregationStats: avg
 
               

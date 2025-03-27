@@ -17,16 +17,16 @@ spec:
       indicator:
         raw:
           rawMetric: 
-            metricName: istio.mesh.request.duration.milliseconds
+            errorMetricName: istio.mesh.request.duration.milliseconds
             category: LATENCY
-            sliAggregationIntervalMS: "300"
+            sliAggregationIntervalms: "300"
             sliAggregationStats: avg
             filters:
               - key: latencyThreshold
                 value: "5"
                 operator: "="
               - key: latencyOperator
-                value: le
+                value: gt
                 operator: "="
     - target: "99"
       window: 2w
@@ -36,15 +36,15 @@ spec:
         requestRatio:
           requestMetric: 
             category: AVAILABILITY
-            numeratorMetrics: 
+            numeratorErrorMetrics: 
               metricName: istio.mesh.request.duration.milliseconds.count
               filters: 
                 - key: code
                   value: "5.*"
-                  operator: "!~"
-            denominatorMetrics: 
+                  operator: "=~"
+            denominatorTotalMetrics: 
               metricName: istio.mesh.request.duration.milliseconds.count
-            sliAggregationIntervalMS: "300"
+            sliAggregationIntervalms: "300"
             sliAggregationStats: avg
               
 

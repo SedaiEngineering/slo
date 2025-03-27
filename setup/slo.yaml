@@ -75,7 +75,7 @@ spec:
                       properties:
                         raw:
                           description: |-
-                            Raw is the raw SLI type. it describes a single query that will get the success criteria for the SLO.
+                            Raw is the raw SLI type. it describes a single query that will get the error criteria for the SLO.
                           properties:
                             rawMetric:
                               description: |-
@@ -100,17 +100,17 @@ spec:
                                       operator:
                                         type: string
                                   type: array
-                                metricName:
+                                errorMetricName:
                                   type: string
-                                sliAggregationIntervalMS:
+                                sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
                               required:
-                              - metricName
-                              - sliAggregationIntervalMS
+                              - errorMetricName
+                              - sliAggregationIntervalms
                               - sliAggregationStats
                               - category
                               type: object
@@ -123,18 +123,18 @@ spec:
                                   type: string
                                 qlType:
                                   type: string
-                                query:
-                                  description: Specify the uptime success query. For latency queries, the latency threshold can be specified as >= latency threshold or any promql supported comparator
+                                errorQuery:
+                                  description: Specify the uptime error query. For latency queries, the error latency threshold can be specified as >= latency threshold to repesent error conditions or any promql supported comparator
                                   type: string
-                                sliAggregationIntervalMS:
+                                sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
                               required:
-                              - query
-                              - sliAggregationIntervalMS
+                              - errorQuery
+                              - sliAggregationIntervalms
                               - sliAggregationStats
                               - category
                               type: object
@@ -151,8 +151,8 @@ spec:
                                   description: |-
                                     category can be any of these LATENCY, AVAILABILITY, ERRORS
                                   type: string
-                                numeratorMetrics:
-                                  description: numeratorMetrics is the metric that returns success there are.
+                                numeratorErrorMetrics:
+                                  description: numeratorErrorMetrics is the metric that returns errors there are.
                                   properties:
                                     metricName:
                                       type: string
@@ -174,7 +174,7 @@ spec:
                                   required:
                                   - metricName
                                   type: object
-                                denominatorMetrics:
+                                denominatorTotalMetrics:
                                   description: denominatorMetrics is the metric that returns how many requests there are in total.
                                   properties:
                                     metricName:
@@ -197,16 +197,16 @@ spec:
                                   required:
                                   - metricName
                                   type: object
-                                sliAggregationIntervalMS:
+                                sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in milliseconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
                               required:
-                              - numeratorMetrics
-                              - denominatorMetrics
-                              - sliAggregationIntervalMS
+                              - numeratorErrorMetrics
+                              - denominatorTotalMetrics
+                              - sliAggregationIntervalms
                               - sliAggregationStats
                               - category
                               type: object
@@ -218,20 +218,20 @@ spec:
                                   type: string
                                 qlType:
                                   type: string
-                                numeratorQuery:
+                                numeratorErrorQuery:
                                   type: string
-                                denominatorQuery:
+                                denominatorTotalQuery:
                                   type: string
-                                sliAggregationIntervalMS:
+                                sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in milliseconds
                                   type: string
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
                               required:
-                              - numeratorQuery
-                              - denominatorQuery
-                              - sliAggregationIntervalMS
+                              - numeratorErrorQuery
+                              - denominatorTotalQuery
+                              - sliAggregationIntervalms
                               - sliAggregationStats
                               - category
                               type: object
@@ -256,8 +256,8 @@ spec:
                                 perWindowAggregation:
                                   description: Smaller Fixed time window over which Metrics are evaluated.
                                   type: string
-                                numeratorMetrics:
-                                  description: numeratorMetrics is the metric that returns Percentage of successful windows .
+                                numeratorErrorMetrics:
+                                  description: numeratorMetrics is the metric that returns Percentage of error windows .
                                   properties:
                                     metricName:
                                       type: string
@@ -278,7 +278,7 @@ spec:
                                   required:
                                   - metricName
                                   type: object
-                                denominatorMetrics:
+                                denominatorTotalMetrics:
                                   description: denominatorMetrics is the metric that returns total windows.
                                   properties:
                                     metricName:
@@ -301,8 +301,8 @@ spec:
                                   - metricName
                                   type: object
                               required:
-                              - numeratorMetrics
-                              - denominatorMetrics
+                              - numeratorErrorMetrics
+                              - denominatorTotalMetrics
                               - perWindowAggregation
                               - perWindowInterval
                               - category
@@ -315,13 +315,13 @@ spec:
                                   type: string
                                 qlType:
                                   type: string
-                                numeratorQuery:
+                                numeratorErrorQuery:
                                   type: string
-                                denominatorQuery:
+                                denominatorTotalQuery:
                                   type: string
                               required:
-                              - numeratorQuery
-                              - denominatorQuery
+                              - numeratorErrorQuery
+                              - denominatorTotalQuery
                               - category
                               type: object
                           oneOf:
