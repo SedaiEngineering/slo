@@ -143,7 +143,7 @@ spec:
                           - required: ["rawQueryLanguage"]
                           type: object
                         requestRatio:
-                          description: Ratio is the indicator that measures against success / total events.
+                          description: Ratio is the indicator that measures against error / total events.
                           properties:
                             requestMetric:
                               properties:
@@ -241,7 +241,7 @@ spec:
                           type: object
                         windowedRatio:
                           description:  |-
-                            Ratio is the indicator that measures against successful / total events over fixed time windows. 
+                            Ratio is the indicator that measures against error / total events over fixed time windows. 
                             Services with periodic bulk operations or batch processes are sbest suited for this
                           properties:
                             windowMetric:
