@@ -4,30 +4,29 @@ kind: ServiceLevelObjective
 metadata:
   labels:
     owner: currencyTeam
+    environment: production
+    app: currencyservice
+  namespace: google-examples
   name: currencyservice-slo
-  namespace: google-examples
 spec:
-  namespace: google-examples
-  service: currencyservice
   slos:
     - target: "99"
       window: 2w
       name: "Latecy"
-      description: "99 % of the requests should have latency less than 5ms"
+      description: "99 % of the requests should have latency less than 5ms for successful"
       indicator:
         raw:
           rawMetric: 
-            errorMetricName: istio.mesh.request.duration.milliseconds
+            successMetricName: istio.mesh.request.duration.milliseconds
             category: LATENCY
-            sliAggregationIntervalms: "300"
+            sliAggregationIntervalms: "120000"
             sliAggregationStats: avg
+            latencyThreshold: "100"
+            latencyOperator: le 
             filters:
-              - key: latencyThreshold
-                value: "5"
-                operator: "="
-              - key: latencyOperator
-                value: gt
-                operator: "="
+              - key: response_code
+                value: "5.*"
+                operator: "!~"
     - target: "99"
       window: 2w
       name: "Availability"
@@ -36,7 +35,7 @@ spec:
         requestRatio:
           requestMetric: 
             category: AVAILABILITY
-            numeratorErrorMetrics: 
+            numeratorSuccessMetrics: 
               metricName: istio.mesh.request.duration.milliseconds.count
               filters: 
                 - key: code
@@ -44,8 +43,7 @@ spec:
                   operator: "=~"
             denominatorTotalMetrics: 
               metricName: istio.mesh.request.duration.milliseconds.count
-            sliAggregationIntervalms: "300"
-            sliAggregationStats: avg
+            sliAggregationIntervalms: "120000"
               
 
       

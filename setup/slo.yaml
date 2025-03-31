@@ -16,9 +16,6 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.service
-      name: SERVICE
-      type: string
     - jsonPath: .spec.window
       name: Window
       type: string
@@ -56,12 +53,6 @@ spec:
           spec:
             description: ServiceLevelObjectiveSpec defines the desired state of ServiceLevelObjective.
             properties:
-              service:
-                description: Service of the application of the SLOs.
-                type: string
-              namespace:
-                description: namespace of the application of the SLOs.
-                type: string
               slos:
                 description: SLOs are the SLOs of the service.
                 items:
@@ -75,7 +66,7 @@ spec:
                       properties:
                         raw:
                           description: |-
-                            Raw is the raw SLI type. it describes a single query that will get the error criteria for the SLO.
+                            Raw is the raw SLI type. it describes a single query that will get the success criteria for the SLO.
                           properties:
                             rawMetric:
                               description: |-
@@ -85,11 +76,10 @@ spec:
                                   description: |-
                                     category can be any of these LATENCY, AVAILABILITY, ERRORS
                                   type: string
+                                  enum: ["LATENCY", "AVAILABILITY", "ERRORS"]
                                 filters:
                                   description: |-
                                     Filters takes a key, value pair and allows you to filter based on supported labels. 
-                                    The latency threshold can be specified as >= latency threshold supported key `latencyThreshold` 
-                                    and `latencyOperator` with values le, ge, lt, gt
                                   items:
                                     type: object
                                     properties:
@@ -100,16 +90,27 @@ spec:
                                       operator:
                                         type: string
                                   type: array
-                                errorMetricName:
+                                successMetricName:
                                   type: string
                                 sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
                                   type: string
+                                  default: "120000"
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
+                                  default: "avg"
+                                latencyThreshold:
+                                  description: |-
+                                    The latency threshold can be specified as >= latency threshold supported key `latencyThreshold` 
+                                  type: string
+                                latencyOperator:
+                                  description: |-
+                                    latencyOperator with values le, ge, ge, gt
+                                  enum: ["le", "ge", "ge", "gt"]
+                                  type: string
                               required:
-                              - errorMetricName
+                              - successMetricName
                               - sliAggregationIntervalms
                               - sliAggregationStats
                               - category
@@ -121,19 +122,31 @@ spec:
                                   description: |-
                                     category can be any of these LATENCY, AVAILABILITY, ERRORS
                                   type: string
+                                  enum: ["LATENCY", "AVAILABILITY", "ERRORS"]
+                                latencyThreshold:
+                                  description: |-
+                                    The latency threshold can be specified as >= latency threshold supported key `latencyThreshold` 
+                                  type: string
+                                latencyOperator:
+                                  description: |-
+                                    latencyOperator with values le, ge, ge, gt
+                                  enum: ["le", "ge", "ge", "gt"]
+                                  type: string
                                 qlType:
                                   type: string
-                                errorQuery:
-                                  description: Specify the uptime error query. For latency queries, the error latency threshold can be specified as >= latency threshold to repesent error conditions or any promql supported comparator
+                                successQuery:
+                                  description: Specify the uptime success query. For latency queries, the success latency threshold can be specified as >= latency threshold to repesent success conditions or any promql supported comparator
                                   type: string
                                 sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
                                   type: string
+                                  default: "120000"
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
+                                  default: "avg"
                               required:
-                              - errorQuery
+                              - successQuery
                               - sliAggregationIntervalms
                               - sliAggregationStats
                               - category
@@ -143,7 +156,10 @@ spec:
                           - required: ["rawQueryLanguage"]
                           type: object
                         requestRatio:
-                          description: Ratio is the indicator that measures against error / total events.
+                          description: |-
+                            Ratio is the indicator that measures against success / total events. The metrics should be a count or rate for this
+                            This is event based, so no aggregation is allowed on the count or rate
+                            If you have specific aggregation needs, pelase use windowed ratio.
                           properties:
                             requestMetric:
                               properties:
@@ -151,16 +167,16 @@ spec:
                                   description: |-
                                     category can be any of these LATENCY, AVAILABILITY, ERRORS
                                   type: string
-                                numeratorErrorMetrics:
-                                  description: numeratorErrorMetrics is the metric that returns errors there are.
+                                  enum: ["LATENCY", "AVAILABILITY", "ERRORS"]
+                                numeratorSuccessMetrics:
+                                  description: numeratorSuccessMetrics is the metric that returns successs there are.
                                   properties:
                                     metricName:
                                       type: string
                                     filters:
                                       description: |-
                                         Filters takes a key, value pair and allows you to filter based on supported labels.
-                                        The latency threshold can be specified as filter supported key `latencyThreshold` 
-                                        and `latencyOperator` with values le, ge, lt, gt
+                                        For latency, please specify a filter "le","gt" etc. to specify the threshold latency 
                                       items:
                                         type: object
                                         properties:
@@ -170,7 +186,7 @@ spec:
                                             type: string 
                                           operator:
                                             type: string                               
-                                      type: array                                      
+                                      type: array                                   
                                   required:
                                   - metricName
                                   type: object
@@ -182,8 +198,6 @@ spec:
                                     filters:
                                       description: |-
                                         Filters takes a key, value pair and allows you to filter based on supported labels.
-                                        The latency threshold can be specified as filter supported key `latencyThreshold` 
-                                        and `latencyOperator` with values le, ge, lt, gt
                                       items:
                                         type: object
                                         properties:
@@ -200,14 +214,11 @@ spec:
                                 sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in milliseconds
                                   type: string
-                                sliAggregationStats:
-                                  description: This is the aggregation for slicing the timeseries into equal-duration intervals
-                                  type: string
+                                  default: "120000"
                               required:
-                              - numeratorErrorMetrics
+                              - numeratorSuccessMetrics
                               - denominatorTotalMetrics
                               - sliAggregationIntervalms
-                              - sliAggregationStats
                               - category
                               type: object
                             requestQueryLanguage:
@@ -216,20 +227,23 @@ spec:
                                   description: |-
                                     category can be any of these LATENCY, AVAILABILITY, ERRORS
                                   type: string
+                                  enum: ["LATENCY", "AVAILABILITY", "ERRORS"]
                                 qlType:
                                   type: string
-                                numeratorErrorQuery:
+                                numeratorSuccessQuery:
                                   type: string
                                 denominatorTotalQuery:
                                   type: string
                                 sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in milliseconds
                                   type: string
+                                  default: "120000"
                                 sliAggregationStats:
                                   description: This is the aggregation for slicing the timeseries into equal-duration intervals
                                   type: string
+                                  default: "avg"
                               required:
-                              - numeratorErrorQuery
+                              - numeratorSuccessQuery
                               - denominatorTotalQuery
                               - sliAggregationIntervalms
                               - sliAggregationStats
@@ -241,8 +255,9 @@ spec:
                           type: object
                         windowedRatio:
                           description:  |-
-                            Ratio is the indicator that measures against error / total events over fixed time windows. 
-                            Services with periodic bulk operations or batch processes are sbest suited for this
+                            Ratio is the indicator that measures against success / total events over fixed time windows. 
+                            Services with periodic bulk operations or batch processes are sbest suited for this. 
+                            This also need both ratio metrics to be from the same monitoring provider.
                           properties:
                             windowMetric:
                               properties:
@@ -256,8 +271,8 @@ spec:
                                 perWindowAggregation:
                                   description: Smaller Fixed time window over which Metrics are evaluated.
                                   type: string
-                                numeratorErrorMetrics:
-                                  description: numeratorMetrics is the metric that returns Percentage of error windows .
+                                numeratorSuccessMetrics:
+                                  description: numeratorMetrics is the metric that returns Percentage of success windows .
                                   properties:
                                     metricName:
                                       type: string
@@ -301,7 +316,7 @@ spec:
                                   - metricName
                                   type: object
                               required:
-                              - numeratorErrorMetrics
+                              - numeratorSuccessMetrics
                               - denominatorTotalMetrics
                               - perWindowAggregation
                               - perWindowInterval
@@ -315,12 +330,12 @@ spec:
                                   type: string
                                 qlType:
                                   type: string
-                                numeratorErrorQuery:
+                                numeratorSuccessQuery:
                                   type: string
                                 denominatorTotalQuery:
                                   type: string
                               required:
-                              - numeratorErrorQuery
+                              - numeratorSuccessQuery
                               - denominatorTotalQuery
                               - category
                               type: object
