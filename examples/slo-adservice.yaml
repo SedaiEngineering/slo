@@ -5,8 +5,8 @@ metadata:
   labels:
     owner: adServiceTeam
     environment: production
-    app: nginx 
-  name: currencyservice-slo
+    app: adservice 
+  name: adservice-slo
   namespace: google-examples
 spec:
   slos:
