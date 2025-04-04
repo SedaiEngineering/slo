@@ -33,8 +33,8 @@ spec:
           requestQueryLanguage: 
             qlType: promql 
             category: AVAILABILITY
-            numeratorSuccessQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples",response_code!~"5.*"}
-            denominatorTotalQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
+            numeratorSuccessQuery: sum(rate(istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples",response_code!~"5.*"}[5m]))
+            denominatorTotalQuery: sum(rate(istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}[5m]))
     - target: "99"
       window: 2w
       name: "LatencyRatio"
