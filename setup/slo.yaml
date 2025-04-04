@@ -135,7 +135,11 @@ spec:
                                 qlType:
                                   type: string
                                 successQuery:
-                                  description: Specify the uptime success query. For latency queries, the success latency threshold can be specified as >= latency threshold to repesent success conditions or any promql supported comparator
+                                  description: |- 
+                                    Specify the uptime success query. For latency queries, the success latency threshold shoul be specified as latency threshold additionally .
+                                    The expectation is that it will return a vertically aggregated single time series grouped by service name, namespace etc. 
+                                    which can be mapped to infra.
+                                    and then sedai will aggregate it further based on the sliAggregationIntervalms
                                   type: string
                                 sliAggregationIntervalms:
                                   description: This is the interval for slicing the timeseries into equal-duration intervals in seconds
