@@ -46,7 +46,6 @@ spec:
             category: LATENCY
             numeratorSuccessQuery: istio_request_duration_milliseconds_bucket{destination_service_name="adservice", destination_service_namespace="google-examples",le="0.1"}
             denominatorTotalQuery: istio_request_duration_milliseconds_count{destination_service_name="adservice", destination_service_namespace="google-examples"}
-            sliAggregationIntervalms: "300000"
 
               
 
