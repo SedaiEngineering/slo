@@ -231,22 +231,16 @@ spec:
                                 qlType:
                                   type: string
                                 numeratorSuccessQuery:
+                                  description: |-
+                                    These queries should return a sum in the smaller SLI aggregation window and The SLI aggregation window allowed is 1-10m
                                   type: string
                                 denominatorTotalQuery:
+                                  description: |-
+                                    These queries should return a sum in the smaller SLI aggregation window and The SLI aggregation window allowed is 1-10m
                                   type: string
-                                sliAggregationIntervalms:
-                                  description: This is the interval for slicing the timeseries into equal-duration intervals in milliseconds
-                                  type: string
-                                  default: "120000"
-                                sliAggregationStats:
-                                  description: This is the aggregation for slicing the timeseries into equal-duration intervals
-                                  type: string
-                                  default: "avg"
                               required:
                               - numeratorSuccessQuery
                               - denominatorTotalQuery
-                              - sliAggregationIntervalms
-                              - sliAggregationStats
                               - category
                               type: object
                           oneOf:
