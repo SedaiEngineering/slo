@@ -357,6 +357,11 @@ spec:
                         Description describes the ServiceLevelObjective in more detail and
                         gives extra context for engineers that might not directly work on the service.
                       type: string
+                    scope:
+                      description: |-
+                        Defines where the SLO is applied: availability, optimization, or unused
+                      type: string
+                      enum: [ "NONE", "OPTIMIZATION_ONLY", "AVAILABILITY_AND_OPTIMIZATION" ]
                   required:
                   - indicator
                   - target
