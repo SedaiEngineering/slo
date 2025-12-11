@@ -18,7 +18,7 @@ spec:
         raw:
           rawQueryLanguage:
             qlType: promql 
-            successQuery: avg_over_time(avg(rate(istio_request_duration_milliseconds_sum{destination_service_name="adservice",destination_service_namespace="google-examples"}[2m:])/rate(istio_request_duration_milliseconds_count{destination_service_name="adservice",destination_service_namespace="google-examples"}[2m:])) by (destination_service_name,destination_service_namespace)[5m:])
+            successQuery: avg(rate(istio_request_duration_milliseconds_sum{destination_service_name="adservice",destination_service_namespace="google-examples"}[2m:])/rate(istio_request_duration_milliseconds_count{destination_service_name="adservice",destination_service_namespace="google-examples"}[2m:])) by (destination_service_name,destination_service_namespace))
             category: LATENCY
             latencyThreshold: "100"
             latencyOperator: le        
