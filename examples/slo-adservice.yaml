@@ -1,5 +1,5 @@
 ---
-apiVersion: sedai.dev/v1alpha1
+apiVersion: sedai.dev/v1beta1
 kind: ServiceLevelObjective
 metadata:
   labels:
@@ -14,6 +14,7 @@ spec:
       window: 2w
       name: "Latency"
       description: "99 % of the requests should have latency less than 30ms over a 2 week window"
+      scope: NONE
       indicator:
         raw:
           rawQueryLanguage:
@@ -28,6 +29,7 @@ spec:
       window: 2w
       name: "Availability"
       description: "99% of the requests should be successful over a 2 week window"
+      scope: OPTIMIZATION_ONLY
       indicator:
         requestRatio:
           requestQueryLanguage: 
