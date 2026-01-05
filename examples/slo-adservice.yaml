@@ -6,7 +6,7 @@ metadata:
     owner: adServiceTeam
     environment: production
     app: adservice 
-  name: adservice-slo
+  name: adservice-slo-crd
   namespace: google-examples
 spec:
   slos:
